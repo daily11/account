@@ -1,0 +1,178 @@
+<!--
+ * 公司：上海普适导航科技股份有限公司
+ * 网址：http://ubinavi.com.cn/
+ * 开发者：Chen Yixing
+ * 开发者邮箱：1663268062@qq.com
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+		<!-- 时光轴控件样式表 -->
+		<link rel="stylesheet" type="text/css" href="css/TimeAxis.css" />
+		<script src="js/mui.js"></script>
+		<script src="js/jquery-3.3.1.min.js"></script>
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body onload="app.route()"> 
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">支出</h1>
+		</header>
+		<div class="mui-content">
+			<!-- 时光轴布局开始 -->
+			<div id="main" class="main">
+				<div>
+					<div class="cost-top">
+						<span id="timeFlag" class="left"></span>
+						<div class="dot"></div>
+						<span id="totalCost" class="right"></span>
+						<hr>
+					</div>
+					<div class="bottom">
+						<!-- <div class="cost-bottom">
+							<span id="time" class="left">14:14</span>
+							<div>
+								<img id="typeImg" src="img/tubiao.png" />
+							</div>
+							<span id="typeName" class="right">吃饭50</span>
+							<hr>
+						</div> -->
+					</div>
+				</div>
+			</div>
+			<!-- 时光轴布局结束 -->
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		// 时间段,涵盖:本日 本周 本月 本年
+		var timeFlag;
+		// 当前时间段总消费金额
+		var totalCost;
+		// 具体消费时刻
+		var time;
+		// 消费类型图标
+		var typeImg;
+		// 消费类型名
+		var typeName;
+		// 开始时间
+		var startTime;
+		// 结束时间
+		var endTime;
+
+		mui.init();
+		mui.plusReady(function() {
+			//初始化控件
+			initView();
+			//初始化页面后加载数据
+			initData();
+			//初始化控件监听事件
+			initListener();
+		});
+
+		/**
+		 * 初始化控件
+		 */
+		function initView() {
+			timeFlag = document.getElementById("timeFlag");
+			totalCost = document.getElementById("totalCost");
+			time = document.getElementById("time");
+			typeImg = document.getElementById("typeImg");
+			typeName = document.getElementById("typeName");
+		}
+
+		/**
+		 * 初始化页面后加载数据
+		 */
+		function initData() {
+			var _typeName = app.getUrlParam('typeName');
+			var _moneyTotal = app.getUrlParam('moneyTotal');
+			startTime = app.getUrlParam("startTime");
+			endTime = app.getUrlParam("endTime");
+			// console.log(_moneyTotal);
+			timeFlag.innerHTML = _typeName;
+			totalCost.innerHTML = "-" + _moneyTotal + "元";
+
+			//消费类目数组
+			var arr = JSON.parse(app.getItem("write"));
+			// console.log(JSON.stringify(arr))
+			// 组装html
+			initHtmls(arr, _typeName);
+		}
+
+		/**
+		 * 初始化控件监听事件
+		 */
+		function initListener() {
+
+		}
+
+		/**
+		 * 组装html
+		 * 
+		 * arr：所有消费记录数组
+		 * _typeName：消费类型
+		 */
+		function initHtmls(arr, _typeName) {
+			// console.log(json.type);
+			var html = '';
+			for (var key in arr) {
+				var json = arr[key];
+				if ((json.time >= startTime && json.time <= endTime) || json.time == null) {
+					if (json.type == _typeName) {
+						html = initHtml(json, _typeName, html, 0);
+						continue;
+					}
+					if (_typeName == "其他" && json.type != "吃饭" && json.type != "车费" && json.type != "衣服") {
+						html = initHtml(json, json.type, html, 1);
+					}
+				}
+			}
+			// console.log(html);
+			document.getElementsByClassName("bottom")[0].innerHTML = html;
+		}
+
+		/**
+		 * 组装单次循环html
+		 * 
+		 * json：单条消费记录
+		 * _typeName：消费类型
+		 * html:单次循环组装结果
+		 * flag：1为“其他”消费类型
+		 */
+		function initHtml(json, _typeName, html, flag) {
+			var imgtr;
+			switch (json.type) {
+				case "吃饭":
+					imgtr = "img/eat.png";
+					break; 
+				case "车费":
+					imgtr = "img/car.png";
+					break;
+				case "衣服":
+					imgtr = "img/clothes.png";
+					break;
+				default:
+					imgtr = "img/auto.png";
+					break;
+			}
+			var string = '<div class="cost-bottom">';
+			string += '<span id="time" class="left">';
+			string += json.time + '</span><div><img id="typeImg" src=' + imgtr + '/></div>';
+			if (flag == 1) {
+				string += '<span id="typeName" class="right">' + _typeName;
+			} else {
+				string += '<span id="typeName" class="right">';
+			}
+			string += '-' + json.money + '元</span><hr></div>';
+			html += string;
+			return html;
+		}
+	</script>
+
+</html>

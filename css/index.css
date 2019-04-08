@@ -1,0 +1,51 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.mui-popover {
+	width: 150px;
+	height: 90px;
+}
+
+.mui-bar {
+	height: 100px;
+	border-bottom: 1px solid #ddd;
+}
+
+.mui-bar-nav~.mui-content {
+	padding-top: 100px;
+}
+
+.page_loader {
+	text-align: center;
+	color: gray;
+	border-top: 1px solid #ccc;
+	padding-top: 5px;
+}
+
+.init-html-h3 {
+	text-align: left;
+	font-size: 18px;
+	font-weight: 100;
+	margin-left: 13px;
+	line-height: 40px;
+}
+
+.add {
+	text-align: center;
+	line-height: 70px;
+	width: 70px;
+	height: 70px;
+	background-color: #efb336;
+	border-radius: 35px;
+	position: absolute;
+	right: 32px;
+	bottom: 50px;
+}
+
+.add img {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}

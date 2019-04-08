@@ -1,0 +1,17 @@
+var mArrDateRanges = [{
+		text: '本日',
+		value: '本日'
+	},
+	{
+		text: '本周',
+		value: '本周'
+	},
+	{
+		text: '本月',
+		value: '本月'
+	},
+	{
+		text: '本年',
+		value: '本年'
+	}
+];

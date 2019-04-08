@@ -1,0 +1,185 @@
+<!--
+ * 公司：上海普适导航科技股份有限公司
+ * 网址：http://ubinavi.com.cn/
+ * 开发者：Chen Yixing
+ * 开发者邮箱：1663268062@qq.com
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui控件 -->
+		<link href="css/mui.css" rel="stylesheet" />
+		<script src="js/mui.js"></script>
+		<!-- 选择器控件 -->
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<script src="./js/mui.picker.min.js"></script>
+		<!-- 弹出框控件 -->
+		<link rel="stylesheet" type="text/css" href="css/mui.poppicker.css" />
+		<script src="./js/mui.poppicker.js"></script>
+		<!-- jquery控件 -->
+		<script src="js/jquery-3.3.1.min.js"></script>
+		<!-- 全局函数 -->
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 其他 -->
+		<link rel="stylesheet" type="text/css" href="css/write.css" />
+		<script src="js/write.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body onload="app.route()">
+		<!-- 导航栏 -->
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">记账</h1>
+		</header>
+		<!-- 内容体 -->
+		<div class="mui-content">
+			<!-- 消费类型 -->
+			<div>
+				<label class="type">消费类型</label>
+				<div class="mui-collapse-content">
+					<form class="mui-input-group">
+						<div class="mui-input-row mui-radio">
+							<label>吃饭</label>
+							<input name='radio' type="radio" value="吃饭">
+						</div>
+						<div class="mui-input-row mui-radio">
+							<label>车费</label>
+							<input name='radio' type="radio" value="车费">
+						</div>
+						<div class="mui-input-row mui-radio">
+							<label>衣服</label>
+							<input name='radio' type="radio" value="衣服">
+						</div>
+						<div class="mui-input-row mui-radio">
+							<label>其他</label>
+							<input name='radio' type="radio" value="其他" checked>
+						</div>
+					</form>
+				</div>
+			</div>
+			<!-- 消费金额 -->
+			<div>
+				<label class="money">消费金额</label>
+				<div id="money" class="mui-input-row">
+					<label>金额：</label>
+					<input type="number" name="money" class="mui-input-clear" placeholder="请输入消费金额(单位:元)">
+				</div>
+			</div>
+			<!-- 保存按钮 -->
+			<div class="mui-content-padded">
+				<button id='btnLogin' type="button" class="mui-btn mui-btn-blue mui-btn-block">保存</button>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		//消费时间
+		var time;
+		//消费类型
+		var type = "其他";
+		//消费金额
+		var money;
+		//保存按钮
+		var btnLogin;
+
+		mui.init();
+		mui.plusReady(function() {
+			//初始化控件
+			initView();
+			//初始化页面后加载数据
+			initData();
+			//初始化控件监听事件
+			initListener();
+		});
+
+		/**
+		 * 初始化控件
+		 */
+		function initView() {
+			btnLogin = $("#btnLogin");
+		}
+
+		/**
+		 * 初始化页面后加载数据
+		 */
+		function initData() {
+
+		}
+
+		/**
+		 * 初始化控件监听事件
+		 */
+		function initListener() {
+			//保存btn监听
+			btnLogin.click(function() {
+				money = $("input[name='money']").val();
+				if (money == "") {
+					mui.toast("请输入消费金额！");
+					return;
+				}
+
+				type = $("input[name='radio']:checked").val();
+				if (type == "其他") {
+					mui.prompt('消费类型', '请输入消费类型', '其他', ['取消', '确认'], function(e) {
+						if (e.index == 0) {
+							//取消
+							return;
+						} else {
+							//确认
+							if (e.value == "") {
+								mui.toast("请输入消费类型！");
+								return;
+							} else {
+								if (e.value.length >= 3) {
+									mui.toast("消费类型长度为2！")
+								} else {
+									type = e.value;
+									save();
+								}
+							}
+						}
+					}, 'div');
+				} else {
+					save();
+				}
+			}) //end for "保存"按钮
+		}
+
+		/**
+		 * 保存单次消费记录
+		 */
+		function save() {
+			var arr = JSON.parse(app.getItem("write"));
+			if (arr == null) {
+				arr = [];
+			}
+
+			//将新增的账单记录入库
+			write.save(arr, type, money);
+
+			//让前一个界面刷新数据
+			var currentPage = plus.webview.currentWebview();
+			var fatherPage = currentPage.opener();
+			mui.fire(fatherPage, 'read2Write', {
+				msg: "",
+			});
+
+			mui.back();
+			mui.back();
+		}
+
+		/**
+		 * 消费时间li监听
+		 */
+		function selectDate() {
+			var dtPicker = new mui.DtPicker();
+			dtPicker.show(function(selectItems) {
+				time = write.selectDate(selectItems);
+			})
+		}
+	</script>
+
+</html>

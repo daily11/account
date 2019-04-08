@@ -1,0 +1,239 @@
+<!--
+ * 公司：上海普适导航科技股份有限公司
+ * 网址：http://ubinavi.com.cn/
+ * 开发者：Chen Yixing
+ * 开发者邮箱：1663268062@qq.com
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- mui控件 -->
+		<link href="css/mui.css" rel="stylesheet" />
+		<script src="js/mui.js"></script>
+		<!-- 选择器控件 -->
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<script src="./js/mui.picker.min.js"></script>
+		<!-- 弹出框控件 -->
+		<link rel="stylesheet" type="text/css" href="css/mui.poppicker.css" />
+		<script src="./js/mui.poppicker.js"></script>
+		<!-- jquery控件 -->
+		<script src="js/jquery-3.3.1.min.js"></script>
+		<!-- 全局函数 -->
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 其他 -->
+		<link href="css/style.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 左侧导航栏时间范围 -->
+		<script src="json/date_ranges.json" type="text/javascript" charset="utf-8"></script>
+		<!-- 消费类型 -->
+		<script src="json/type.json" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body onload="app.route()">
+		<!-- 主页面标题 -->
+		<header class="mui-bar mui-bar-nav">
+			<a id="menu" class="mui-action-menu mui-icon mui-icon-bars mui-pull-right" href="#topPopover"></a>
+			<h1 class="mui-title">记账通</h1>
+			<div class="mui-bar-tab">
+				<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+				<div class="" style="text-align: right">
+					<span class=" mui-icon mui-icon-search" id="search"></span>
+					<span id='selectDateStart' style="color: grey">开始时间</span> -
+					<span id='selectDateEnd' style="color: grey">结束时间</span>
+				</div>
+			</div>
+		</header>
+
+		<div id="main" class="mui-content mui-hidden">
+			<ul class="mui-table-view " id="list">
+
+			</ul>
+			<ul class="mui-table-view">
+				<h3 id="moneyTotal" class="init-html-h3" style="font-size: bold;color:red">
+					总消费额:&nbsp;&nbsp;&nbsp;100元</h3>
+			</ul>
+		</div>
+		<!-- 底部右下角“新增记账”图表 -->
+		<div id="addAccount" class="add">
+			<img src=" img/add.png" />
+		</div>
+		<!--右上角弹出菜单-->
+		<div id="topPopover" class="mui-popover">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a id="btn_img" href="#"><i class="mui-icon mui-icon-image" style="padding-right: 3px;"></i>图表</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="btn_settings" href="#"><i class="mui-icon mui-icon-bars" style="padding-right: 3px;"></i>设置</a>
+				</li>
+			</ul>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		mui.init();
+		mui.plusReady(function() {
+			//初始化控件
+			initView();
+			//初始化页面后加载数据
+			initData();
+			//初始化控件监听事件
+			initListener();
+		});
+
+		//消费类目数组[app.getItem("write")]
+		var arr;
+		//总消费额
+		var moneyTotal = "0";
+		//消费类目
+		var type;
+		// 时间范围
+		var arrDateRanges;
+		// 图表控件
+		var btn_img;
+		// 设置控件
+		var btn_settings;
+		//导航栏左侧时间控件
+		var btn_date_range;
+		// 导航栏右侧开始时间控件
+		var selectDateStart;
+		// 导航栏右侧结束时间控件
+		var selectDateEnd;
+		// 消费记录列表
+		var list;
+		// 消费总额控件
+		var money;
+
+		/**
+		 * 初始化控件
+		 */
+		function initView() {
+			btn_img = document.getElementById("btn_img");
+			btn_settings = document.getElementById("btn_settings");
+			btn_date_range = $("#btn_date_range");
+			selectDateStart = $("#selectDateStart");
+			selectDateEnd = $("#selectDateEnd");
+			list = $("#list");
+			money = $("#moneyTotal");
+		}
+
+		/**
+		 * 初始化页面后加载数据
+		 */ 
+		function initData() {
+			//清除默认隐藏样式,让内容显示出来 
+			$("#main").removeClass("mui-hidden");
+			// 左侧导航栏 时间范围[json文档获取]
+			arrDateRanges = mArrDateRanges;
+			//消费类目[json文档获取]
+			type = mType;
+			//根据导航栏左侧的时间控件值，动态设置右侧时间控件值！
+			index.initDateRange(btn_date_range, selectDateStart, selectDateEnd);
+			// 加载列表数据【核心】
+			loadData();
+		}
+
+		/**
+		 * 初始化控件监听事件
+		 */
+		function initListener() {
+			//选择时间 [导航栏左侧]
+			var pickerDateRanges = new mui.PopPicker();
+			pickerDateRanges.setData(arrDateRanges);
+			$("#btn_date_range").click(function() {
+				pickerDateRanges.show(function(items) {
+					$("#btn_date_range").text(items[0].text);
+					// console.log(btn_date_range.innerHTML);
+					//根据导航栏左侧的时间控件值，动态设置右侧时间控件值！
+					index.initDateRange(btn_date_range, selectDateStart, selectDateEnd);
+					loadData();
+				});
+			})
+
+			//选择时间 [导航栏右侧]
+			$("#selectDateStart").click(function() {
+				var dtpicker = new mui.DtPicker({
+					type: "date", //设置日历初始视图模式    
+				})
+				dtpicker.show(function(items) {
+					$("#selectDateStart").text(items.value);
+					loadData();
+				})
+			})
+
+			$("#selectDateEnd").click(function() {
+				var dtpicker = new mui.DtPicker({
+					type: "date", //设置日历初始视图模式    
+				})
+				dtpicker.show(function(items) {
+					$("#selectDateEnd").html(items.value);
+					loadData();
+				})
+			})
+
+			$("#addAccount").click(function() {
+				app.open("write.html")
+			})
+
+			//"图表"按钮监听
+			btn_img.addEventListener('tap', function() {
+				mui('#topPopover').popover('hide');
+				app.open("echart.html")
+			})
+
+			//"图表"按钮监听
+			btn_settings.addEventListener('tap', function() {
+				mui('#topPopover').popover('hide');
+				app.open("settings.html")
+			})
+
+			/**
+			 * 消费类目列表跳转监听
+			 */
+			mui(".mui-table-view").on('tap', '.mui-table-view-cell', function() {
+				//获取id
+				var typeName = this.getAttribute("typeName");
+				if (typeName) {
+					app.open("time_axis.html?typeName=" + typeName +
+						"&moneyTotal=" + type[typeName] +
+						"&startTime=" + $("#selectDateStart").html() +
+						"&endTime=" + $("#selectDateEnd").html());
+				}
+			})
+		}
+
+		/**
+		 * 加载列表数据【核心】
+		 */
+		function loadData() {
+			arr = JSON.parse(app.getItem("write"));
+			// 清空列表统计数据
+			type = index.clearType();
+			// 计算金额
+			index.calcMoney(type, selectDateStart, selectDateEnd);
+			//组装html
+			index.init_html(type, list, money);
+		}
+
+		/**
+		 * 重加载页面
+		 */
+		window.addEventListener("read2Write", function(e) {
+			//重加载网页数据!
+			loadData();
+		});
+
+		/**
+		 * 重加载页面
+		 */
+		window.addEventListener("read2Settings", function(e) {
+			//重加载网页数据!
+			loadData();
+		});
+	</script>
+
+</html>

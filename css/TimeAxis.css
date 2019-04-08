@@ -1,0 +1,114 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.main {
+	width: 100%;
+	/* background-color: pink; */
+}
+
+hr {
+	/* opacity: 0.7; */
+	width: 0.1px;
+	/* background-color: gray; */
+	display: absolute;
+	top: 0;
+	margin-left: 50%;
+}
+
+.cost {}
+
+.cost-top {
+	height: 30px;
+}
+
+.cost-top .left {
+	position: absolute;
+	/* background-color: red; */
+	width: 50px;
+	height: 30px;
+	padding-right: 6px;
+	left: 50%;
+	margin-left: -60px;
+	text-align: right;
+	line-height: 30px;
+	color: gray;
+}
+
+.cost-top .right {
+	position: absolute;
+	/* background-color: green; */
+	width: 100px;
+	padding-left: 6px;
+	height: 30px;
+	right: 50%;
+	margin-right: -110px;
+	text-align: left;
+	line-height: 30px;
+	color: red;
+}
+
+.cost-top .dot {
+	border-radius: 10px;
+	width: 12px;
+	height: 12px;
+	background-color: gray;
+	position: absolute;
+	left: 50%;
+	margin-left: -5px;
+	margin-top: 8px;
+}
+
+.cost-top hr {
+	height: 30px;
+}
+
+.cost-bottom {
+	height: 100px;
+	/* background-color: green; */
+}
+
+.cost-bottom .left {
+	position: absolute;
+	/* background-color: red; */
+	width: 50%;
+	height: 100px;
+	left: 0;
+	margin-left: -50px;
+	text-align: right;
+	line-height: 100px;
+	font-size: 16px;
+	color: gray;
+}
+
+.cost-bottom .right {
+	position: absolute;
+	/* background-color: green; */
+	width: 50%;
+	height: 100px;
+	right: 0;
+	padding-left: 50px;
+	text-align: left;
+	line-height: 100px;
+	font-size: 26px;
+	font-weight: bold;
+	color:gray;
+}
+
+.cost-bottom img {
+	width: 50px;
+	height: 50px;
+	border-radius: 25px;
+	background-color: #1afa29;
+	padding: 6px;
+	position: absolute;
+	left: 50%;
+	margin-left: -24px;
+	margin-top: 25px;
+	zoom: 1;
+}
+
+.cost-bottom hr {
+	height: 100px;
+}

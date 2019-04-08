@@ -1,0 +1,29 @@
+.ui-page-login,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+.ta-center {
+	text-align: center;
+}
+
+#login-title {
+	text-align: center;
+	font-size: 40px;
+	font-weight: 900;
+	height: 60px;
+	padding-top: 40px;
+	padding-bottom: 60px;
+}
+
+.mui-off-canvas-right {
+	background: white;
+}
+
+.align {
+	float: right;
+	margin-right: 19px;
+}
