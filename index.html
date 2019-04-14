@@ -24,24 +24,34 @@
 		<!-- 其他 -->
 		<link href="css/style.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
-		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
 		<!-- 左侧导航栏时间范围 -->
 		<script src="json/date_ranges.json" type="text/javascript" charset="utf-8"></script>
 		<!-- 消费类型 -->
 		<script src="json/type.json" type="text/javascript" charset="utf-8"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
 	</head>
 
 	<body onload="app.route()">
 		<!-- 主页面标题 -->
 		<header class="mui-bar mui-bar-nav">
-			<a id="menu" class="mui-action-menu mui-icon mui-icon-bars mui-pull-right" href="#topPopover"></a>
-			<h1 class="mui-title">记账通</h1>
+			<div class="mui-input-row" style="padding-left: 0px;padding-right: 60px;">
+				<div class="mui-input-row mui-search input">
+					<input type="search" id="query" class="mui-input-clear" placeholder="支持简拼/全拼/汉字">
+				</div>
+			</div>
+			
+			<a id="menu" class="" href="#topPopover" style="position: absolute;top:10px;right: 8px;">功能项</a>
 			<div class="mui-bar-tab">
-				<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
-				<div class="" style="text-align: right">
-					<span class=" mui-icon mui-icon-search" id="search"></span>
+				<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range" style="z-index: 1;">本日</button>
+				<div class="" style="text-align: right;">
+					<span class=" mui-icon mui-icon-search" id="search" style="z-index: 2;"></span>
 					<span id='selectDateStart' style="color: grey">开始时间</span> -
 					<span id='selectDateEnd' style="color: grey">结束时间</span>
+				</div>
+			</div>
+			<div class="content mui-hidden">
+				<div class="item">
+					中横泾北口泵闸<span class="content-item-span">zhjbkbz</span>
 				</div>
 			</div>
 		</header>
@@ -55,7 +65,7 @@
 					总消费额:&nbsp;&nbsp;&nbsp;100元</h3>
 			</ul>
 		</div>
-		<!-- 底部右下角“新增记账”图表 -->
+		<!-- 底部右下角“新增记账”按钮 -->
 		<div id="addAccount" class="add">
 			<img src=" img/add.png" />
 		</div>
@@ -73,6 +83,7 @@
 	</body>
 
 	<script type="text/javascript">
+		<!-- mui -->
 		mui.init();
 		mui.plusReady(function() {
 			//初始化控件
@@ -105,6 +116,8 @@
 		var list;
 		// 消费总额控件
 		var money;
+		// 底部右下角“新增记账”
+		var addAccount;
 
 		/**
 		 * 初始化控件
@@ -117,11 +130,12 @@
 			selectDateEnd = $("#selectDateEnd");
 			list = $("#list");
 			money = $("#moneyTotal");
+			addAccount = $("#addAccount");
 		}
 
 		/**
 		 * 初始化页面后加载数据
-		 */ 
+		 */
 		function initData() {
 			//清除默认隐藏样式,让内容显示出来 
 			$("#main").removeClass("mui-hidden");
@@ -142,9 +156,9 @@
 			//选择时间 [导航栏左侧]
 			var pickerDateRanges = new mui.PopPicker();
 			pickerDateRanges.setData(arrDateRanges);
-			$("#btn_date_range").click(function() {
+			btn_date_range.click(function() {
 				pickerDateRanges.show(function(items) {
-					$("#btn_date_range").text(items[0].text);
+					btn_date_range.text(items[0].text);
 					// console.log(btn_date_range.innerHTML);
 					//根据导航栏左侧的时间控件值，动态设置右侧时间控件值！
 					index.initDateRange(btn_date_range, selectDateStart, selectDateEnd);
@@ -153,37 +167,39 @@
 			})
 
 			//选择时间 [导航栏右侧]
-			$("#selectDateStart").click(function() {
+			selectDateStart.click(function() {
 				var dtpicker = new mui.DtPicker({
 					type: "date", //设置日历初始视图模式    
 				})
 				dtpicker.show(function(items) {
-					$("#selectDateStart").text(items.value);
+					selectDateStart.text(items.value);
 					loadData();
 				})
 			})
 
-			$("#selectDateEnd").click(function() {
+			selectDateEnd.click(function() {
 				var dtpicker = new mui.DtPicker({
 					type: "date", //设置日历初始视图模式    
 				})
 				dtpicker.show(function(items) {
-					$("#selectDateEnd").html(items.value);
+					selectDateEnd.html(items.value);
 					loadData();
 				})
 			})
 
-			$("#addAccount").click(function() {
+			// 添加账单记录按钮监听
+			addAccount.click(function() {
 				app.open("write.html")
 			})
 
 			//"图表"按钮监听
 			btn_img.addEventListener('tap', function() {
+				//弹出蒙版隐藏
 				mui('#topPopover').popover('hide');
 				app.open("echart.html")
 			})
 
-			//"图表"按钮监听
+			//"设置"按钮监听
 			btn_settings.addEventListener('tap', function() {
 				mui('#topPopover').popover('hide');
 				app.open("settings.html")
@@ -218,7 +234,7 @@
 		}
 
 		/**
-		 * 重加载页面
+		 * 重加载页面 前往记账界面后的回调
 		 */
 		window.addEventListener("read2Write", function(e) {
 			//重加载网页数据!
@@ -226,12 +242,153 @@
 		});
 
 		/**
-		 * 重加载页面
+		 * 重加载页面 前往设置界面后的回调
 		 */
 		window.addEventListener("read2Settings", function(e) {
 			//重加载网页数据!
 			loadData();
 		});
+
+		/**
+		 * 监听软键盘弹出/关闭
+		 */
+		var winHeight = $(window).height();
+		$(window).resize(function() {
+			var thisHeight = $(this).height();
+			if (winHeight - thisHeight > 50) {
+				//当软键盘弹出，在这里面操作
+				addAccount.hide();
+				$(".content").removeClass("mui-hidden");
+			} else {
+				//当软键盘收起，在此处操作
+				addAccount.show();
+				$(".content").addClass("mui-hidden");
+			} 
+		});
+		
+		/*------------------------------顶部搜索栏 开始---------------------------------*/
+		var benZha = [{
+				"id": 1,
+				"name": "吃饭",
+				"pingyin": "cf"
+			},
+			{
+				"id": 2,
+				"name": "车费",
+				"pingyin": "cf"
+			},
+			{
+				"id": 3,
+				"name": "衣服",
+				"pingyin": "yf"
+			},
+			{
+				"id": 4,
+				"name": "其他",
+				"pingyin": "qt"
+			}
+		];
+		
+		//组装列表数据
+		initHtml(benZha);
+		
+		initItemClickListener();
+		
+		/**
+		 * 列表记录点击监听
+		 */
+		function initItemClickListener() {
+			//监听下拉列表条目点击监听事件
+			$(".content").on('click','.item',function(){
+				var value = $(this).text();
+				console.log("您选择的内容：" + value);
+				$("#query").val("");
+				try {
+					initHtml(benZha);
+					$(".mui-table-view-cell").each(function(){
+						//获取id
+						var typeName = this.getAttribute("typeName");
+						console.log(typeName)
+						if (typeName && typeName==value.slice(0,2)) {
+							app.open("time_axis.html?typeName=" + typeName +
+								"&moneyTotal=" + type[typeName] +
+								"&startTime=" + $("#selectDateStart").html() +
+								"&endTime=" + $("#selectDateEnd").html());
+						}  
+						return;
+					});   
+				} catch (e) {
+					console.log(e);
+				}
+			})
+		}
+		 
+		//监听搜索框输入内容变化
+		$("input").bind("input propertychange", function(event) {
+			var value = $(this).val();
+			console.log("输入的内容是：" + value);
+			if (value) {
+				var arr = [];
+				var hasValue = false;
+				/**
+				 * 1 找到数组中拥有输入内容的元素的下标
+				 * 2 遍历列表元素，根据下标来显示与隐藏对应的元素
+				 */
+				for (var i in benZha) {
+					var str = benZha[i].name + benZha[i].pingyin;
+					var intFlat = str.indexOf(value);
+					if (intFlat != -1) {
+						arr.push(1);
+						hasValue = true;
+					} else {
+						arr.push(0);
+					}
+				}
+				console.log(arr);
+				if (hasValue) {
+					//列表中没有的元素隐藏起来
+					initConditionHtml(arr);
+				} else {
+					//没有任何元素搜索到,那么提示"暂无记录"
+					$(".content").html('<span class="hasContent">暂无记录</span>');
+				}
+			} else {
+				initHtml(benZha);
+				return;
+			}
+		});
+		
+		/**
+		 * 按照搜索条件显示列表记录
+		 */
+		function initConditionHtml(arr) {
+			var contentHtml = "";
+			for (var i in benZha) {
+				if (arr[i] == 1) {
+					var json = benZha[i];
+					contentHtml += '<div class="item">';
+					contentHtml += json.name + '<span class="content-item-span">' + json.pingyin + "</span>";
+					contentHtml += '</div>';
+				}
+			}
+			$(".content").html(contentHtml);
+		}
+		 
+		/**
+		 * 组装全部列表记录
+		 */ 
+		function initHtml(arr) {
+			var contentHtml = "";
+			for (var i in arr) {
+				var json = arr[i];
+				contentHtml += '<div class="item">';
+				contentHtml += json.name + '<span class="content-item-span">' + json.pingyin + "</span>";
+				contentHtml += '</div>';
+			}
+			$(".content").html(contentHtml);
+		}
+		/*------------------------------顶部搜索栏 结束---------------------------------*/
+
 	</script>
 
 </html>

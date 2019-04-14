@@ -8,6 +8,7 @@
 	 * 清空列表统计数据
 	 */
 	index.clearType = function() {
+		// console.log("mType--->"+JSON.stringify(mType));
 		var type = {
 			"吃饭": "0",
 			"车费": "0",

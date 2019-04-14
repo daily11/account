@@ -39,7 +39,7 @@
 	height: 70px;
 	background-color: #efb336;
 	border-radius: 35px;
-	position: absolute;
+	position: fixed;
 	right: 32px;
 	bottom: 50px;
 }
@@ -49,3 +49,43 @@
 	height: 100%;
 	text-align: center;
 }
+
+/* 顶部搜索框样式 开始*/
+.header {
+	width: 300px;
+	position: relative;
+	background-color: gray;
+	margin: 0 auto;
+	margin-top: 16px;
+	height: 48px;
+}
+
+.content {
+	/* background-color: red; */
+	border: 1px solid gray;
+	margin-top: 8px;
+	padding-bottom: 16px;
+	
+	background-color: white;
+	position: absolute;
+	top: 40px;
+	right: 68px;
+	left: 8px;
+	z-index: 3;
+}
+
+.content .item {
+	height: 26px;
+	line-height: 26px;
+	padding-left: 8px;
+	/* background-color: green */
+}
+
+.content-item-span {
+	display: none;
+}
+
+.hasContent {
+	padding-left: 8px;
+}
+/* 顶部搜索框样式 结束*/
